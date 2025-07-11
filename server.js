@@ -53,7 +53,7 @@ app.post("/send-email", (req, res) => {
     INSERT INTO enquiries (name, type, regno, phone, email, queries)
     VALUES (?, ?, ?, ?, ?, ?)
   `;
-  const { name, type, regno, phone, email, queries } = req.body;
+  
 
 
   db.query(insertQuery, values, async (err) => {
