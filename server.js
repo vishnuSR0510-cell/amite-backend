@@ -53,7 +53,8 @@ app.post("/send-email", (req, res) => {
     INSERT INTO enquiries (name, type, regno, phone, email, queries)
     VALUES (?, ?, ?, ?, ?, ?)
   `;
-  const values = [name, type, regno, phone, email, queries];
+  const { name, type, regno, phone, email, queries } = req.body;
+
 
   db.query(insertQuery, values, async (err) => {
     if (err) return res.status(500).json({ success: false, error: "DB Error" });
@@ -67,19 +68,17 @@ app.post("/send-email", (req, res) => {
 
     const customerMail = {
   from: process.env.EMAIL_USER,
-  to: email || process.env.EMAIL_TO,
+  to: email || process.env.EMAIL_TO, // ✅ fallback if email is empty
   subject: "✅ Amite Invent-ory - Enquiry Received",
   html: `
-    <h3>Dear ${name || 'Customer'},</h3>
+    <h3>Dear ${name || "Customer"},</h3>
     <p>Thank you for reaching out to <strong>Amite Invent-ory</strong>.</p>
-    <p><strong>Your Query:</strong> ${queries}</p>
-    <p>We’ll review your enquiry and respond as soon as possible.</p>
-    <p>📞 If it's urgent, call us at <strong>+91 9176860553</strong></p>
-    <br>
+    <p>We’ve received your enquiry and will respond soon.</p>
+    <p><strong>Your Query:</strong> ${queries || "N/A"}</p>
+    <p>📞 Call us at <strong>+91 9176860553</strong> if urgent.</p>
     <p>Best regards,<br>Team Amite Invent-ory</p>
   `
 };
-
 
     try {
       await transporter.sendMail(adminMail);
